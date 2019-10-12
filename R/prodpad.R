@@ -35,6 +35,11 @@ ProdPad <- R6::R6Class(
 )
 
 #' @export
+prodpad_api_docs <- function() {
+  utils::browseURL("https://help.prodpad.com/hc/en-us/sections/200724758-API-Documentation")
+}
+
+#' @export
 prodpad <- function(
   api_key = Sys.getenv("PRODPAD_API_KEY", NA_character_),
   url = Sys.getenv("PRODPAD_URL", "https://api.prodpad.com/v1")
