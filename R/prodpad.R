@@ -25,7 +25,7 @@ ProdPad <- R6::R6Class(
         message(capture.output(str(httr::content(res))))
         stop(err)
       }
-    },
+    }
   )
 )
 
