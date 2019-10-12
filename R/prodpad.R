@@ -17,6 +17,11 @@ ProdPad <- R6::R6Class(
       httr::content(res, as = parser)
     },
 
+    search = function(query, type = c("ideas", "products", "personas", "feedbacks")) {
+      query_encoded <- utils::URLencode(paste(query, collapse = "&"))
+      self$GET(glue::glue("search?q={query}"))
+    },
+
     raise_error = function(res) {
       if (httr::http_error(res)) {
         err <- sprintf('%s request failed with %s',
