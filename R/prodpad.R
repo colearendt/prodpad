@@ -1,4 +1,4 @@
-
+#' @export
 ProdPad <- R6::R6Class(
   "ProdPad",
   public = list(
