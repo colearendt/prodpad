@@ -1,0 +1,14 @@
+Package: prodpad
+Title: R Client for the ProdPad API
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Cole",
+           family = "Arendt",
+           role = c("aut", "cre"),
+           email = "cole@rstudio.come",),
+    person(given = "RStudio",
+           role = c("cph", "fnd")))
+Description: Provides a helpful R6 object for interacting with the ProdPad API.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
