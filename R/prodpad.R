@@ -29,6 +29,16 @@ ProdPad <- R6::R6Class(
   )
 )
 
+#' @export
+prodpad <- function(
+  api_key = Sys.getenv("PRODPAD_API_KEY", NA_character_),
+  url = Sys.getenv("PRODPAD_URL", "https://api.prodpad.com/v1")
+) {
+  client <- ProdPad$new(api_key = api_key, url = url)
+
+  client
+}
+
 check_debug <- function(req, res) {
   debug <- getOption('prodpad.debug')
   if (!is.null(debug) && debug) {
