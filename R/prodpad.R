@@ -11,7 +11,11 @@ ProdPad <- R6::R6Class(
 
     GET = function(path, writer = httr::write_memory(), parser = 'parsed') {
       req <- paste0(self$url, path)
-      res <- httr::GET(req, writer)
+      res <- httr::GET(
+        req,
+        self$add_auth(),
+        writer
+        )
       self$raise_error(res)
       check_debug(req, res)
       httr::content(res, as = parser)
@@ -19,7 +23,11 @@ ProdPad <- R6::R6Class(
 
     search = function(query, type = c("ideas", "products", "personas", "feedbacks")) {
       query_encoded <- utils::URLencode(paste(query, collapse = "&"))
-      self$GET(glue::glue("search?q={query}"))
+      self$GET(glue::glue("/search?q={query}"))
+    },
+
+    add_auth = function() {
+      httr::add_headers(Authorization = paste0('Bearer ', self$api_key))
     },
 
     raise_error = function(res) {
@@ -56,3 +64,4 @@ check_debug <- function(req, res) {
     message(httr::content(res, as = 'text'))
   }
 }
+
