@@ -1,12 +1,20 @@
 
+expand_response <- function(client, url, filter = .x) {
+  rawdat<- client$GET(url)
+
+  filter_expr <- rlang::enquo(filter)
+
+  tidyr::unnest_wider(tibble::tibble(dat = rlang::eval_tidy(expr = filter_expr, data = list(.x = rawdat))), dat)
+}
+
 #' @export
 get_feedback <- function(client) {
-  rawdat <- client$GET("/feedback?size=10000")
+  rawdat <- client$GET("/feedbacks?size=10000")
 
   wider <- tidyr::unnest_wider(
     tibble::tibble(dat = rawdat), dat)
 
-  tidyr::unnest_wider(wider, added_by, sep = "_")
+  tidyr::unnest_wider(wider, added_by, names_sep = "_")
 }
 
 #' @export
