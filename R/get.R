@@ -54,3 +54,22 @@ get_ideas <- function(client) {
 
   tidyr::unnest_wider(tibble::tibble(dat = rawdat$ideas), dat)
 }
+
+#' @export
+get_personas <- function(client) {
+  rawdat <- client$GET("/personas")
+
+  tidyr::unnest_wider(tibble::tibble(dat=rawdat), dat)
+}
+
+#' @export
+get_products <- function(client) {
+  rawdat <- client$GET("/products")
+
+  tidyr::unnest_wider(tibble::tibble(dat=rawdat), dat)
+}
+
+#' @export
+feedback_sources <- c(
+  "email", "conference", "in_person_conversation", "sales_team", "social_media", "telephone_conversation", "user_test", "website_contact_form", "customer_feedback_portal", "customer_feedback_widget", "api"
+)
