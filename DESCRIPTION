@@ -8,7 +8,7 @@ Authors@R:
            email = "cole@rstudio.come",),
     person(given = "RStudio",
            role = c("cph", "fnd")))
-Description: Provides a helpful R6 object for interacting with the ProdPad API.
+Description: Provides a helpful R6 object and helpers for interacting with the ProdPad API.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
