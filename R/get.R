@@ -49,8 +49,13 @@ get_contacts <- function(client) {
 }
 
 #' @export
-get_ideas <- function(client) {
-  rawdat <- client$GET("/ideas?size=10000")
+get_ideas <- function(client, product = NULL) {
+  url <- glue::glue(
+    "/ideas?size=10000",
+    safe_query(product, prefix="product="),
+    .sep = "&"
+  )
+  rawdat <- client$GET(url)
 
   tidyr::unnest_wider(tibble::tibble(dat = rawdat$ideas), dat)
 }
