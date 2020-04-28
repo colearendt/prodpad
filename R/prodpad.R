@@ -48,6 +48,11 @@ prodpad_api_docs <- function() {
 }
 
 #' @export
+prodpad_api_key <- function() {
+  utils::browseURL("https://app.prodpad.com/me/apikeys")
+}
+
+#' @export
 prodpad <- function(
   api_key = Sys.getenv("PRODPAD_API_KEY", NA_character_),
   url = Sys.getenv("PRODPAD_URL", "https://api.prodpad.com/v1")
