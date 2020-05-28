@@ -25,7 +25,7 @@ feedback <- function(client, contact, feedback, tags = NULL, personas = NULL, pr
       tags = tags_param,
       personas = personas_param,
       products = products_param,
-      links = links_param,
+      external_links = links_param,
       source = source
     )
   )
