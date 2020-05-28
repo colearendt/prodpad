@@ -4,13 +4,14 @@ feedback <- function(client, contact, feedback, tags = NULL, personas = NULL, pr
   stopifnot(length(contact) == 1)
   stopifnot(length(source) == 1)
 
-  if (is.numeric(contact)) {
-    # this is a contact ID
-    contact_param <- list(contact_id = contact)
-  } else {
-    # maybe it's a name...? try to create it?
-    contact_param <- list(name = contact)
-  }
+  #if (is.numeric(contact)) {
+  #  # this is a contact ID
+  #  contact_param <- list(contact_id = contact)
+  #} else {
+  #  # maybe it's a name...? try to create it?
+  #  contact_param <- list(name = contact)
+  #}
+  contact_param <- list(contact_id = contact)
 
   tags_param <- purrr::map(as.list(tags), ~ list(id = .x))
   personas_param <- purrr::map(as.list(personas), ~ list(id = .x))
@@ -31,5 +32,5 @@ feedback <- function(client, contact, feedback, tags = NULL, personas = NULL, pr
 
   str(post_body)
 
-  client$POST()
+  client$POST("/feedbacks", body = post_body)
 }
