@@ -1,4 +1,5 @@
 library(shiny)
+library(shinycssloaders)
 library(prodpad)
 
 pcli <- prodpad()
@@ -9,26 +10,29 @@ ui <- fluidPage(
 
 
     fluidRow(
-        column(6, uiOutput("select_contact")),
-        column(6, uiOutput("select_product"))
+        column(6, div(withSpinner(uiOutput("select_contact")))),
+        column(6, div(withSpinner(uiOutput("select_product"))))
     ),
     fluidRow(
       column(12,textAreaInput("description", "Feedback", resize = "both", width = "100%", placeholder = "Describe the problem being faced"))
     ),
     fluidRow(
-      column(6, uiOutput("select_personas")),
-      column(6, uiOutput("select_tags"))
+      column(6, withSpinner(uiOutput("select_personas"))),
+      column(6, withSpinner(uiOutput("select_tags")))
     ),
     fluidRow(
       column(6,selectizeInput("links", choices = list(), options = list(create=TRUE), "External Links", multiple = TRUE)),
       column(6,selectizeInput("source", "Source", choices = c("None" = "",prodpad::feedback_sources), selected = ""))
+    ),
+    fluidRow(
+      column(3), column(3, actionButton("submit", "Submit"))
     )
 )
 
 server <- function(input, output) {
   all_contacts <- get_contacts(pcli)
   output$select_contact <- renderUI({
-      selectizeInput(
+     selectizeInput(
           "contact",
           "Contact",
           choices = c("Select a Contact" = "", rlang::set_names(all_contacts$id, all_contacts$name)),
