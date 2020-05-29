@@ -10,6 +10,9 @@ ui <- fluidPage(
 
 
     fluidRow(
+      column(12, div(actionButton("clear", "Clear")))
+    ),
+    fluidRow(
         column(6, div(withSpinner(uiOutput("select_contact")))),
         column(6, div(withSpinner(uiOutput("select_product"))))
     ),
@@ -29,14 +32,14 @@ ui <- fluidPage(
     )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   all_contacts <- get_contacts(pcli)
   output$select_contact <- renderUI({
      selectizeInput(
           "contact",
           "Contact",
           choices = c("Select a Contact" = "", rlang::set_names(all_contacts$id, all_contacts$name)),
-          options = list(create = TRUE)
+          options = list(create = FALSE) # TODO: handle creation better
           )
   })
 
@@ -45,7 +48,7 @@ server <- function(input, output) {
       selectizeInput(
           "products",
           "Products",
-          choices = rlang::set_names(all_products$id, all_products$name),
+          choices = rlang::set_names(all_products$product_id, all_products$name),
           multiple = TRUE
           )
   })
@@ -55,7 +58,7 @@ server <- function(input, output) {
       selectizeInput(
           "personas",
           "Personas",
-          choices = rlang::set_names(all_personas$id, all_personas$name),
+          choices = rlang::set_names(all_personas$persona_id, all_personas$name),
           multiple = TRUE
           )
   })
@@ -65,9 +68,44 @@ server <- function(input, output) {
       selectizeInput(
           "tags",
           "Tags",
-          choices = rlang::set_names(all_tags$id, all_tags$tag),
+          choices = rlang::set_names(all_tags$tag_id, all_tags$tag),
           multiple = TRUE
           )
+  })
+
+  observeEvent(input$submit, {
+    showNotification("Submitting feedback...", type = "message")
+
+    tryCatch({
+      feedback(
+        pcli,
+        contact = input$contact,
+        tags = input$tags,
+        personas = input$personas,
+        products = input$products,
+        source = input$source,
+        links = input$links,
+        feedback = input$description
+        )
+    }, error = function(e) {
+      showNotification(
+        glue::glue("ERROR sending feedback: {e}"),
+        type = "error"
+        )
+    })
+
+    showNotification("Feedback sent!", type = "message")
+  })
+
+  observeEvent(input$clear, {
+    showNotification("Clearing inputs", type = "message")
+    updateSelectizeInput(session, "contact", selected = "")
+    updateSelectizeInput(session, "tags", selected = "")
+    updateSelectizeInput(session, "personas", selected = "")
+    updateSelectizeInput(session, "products", selected = "")
+    updateSelectizeInput(session, "source", selected = "")
+    updateSelectizeInput(session, "links", selected = "")
+    updateTextAreaInput(session, "description", value = "")
   })
 }
 
