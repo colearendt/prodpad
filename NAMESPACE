@@ -3,6 +3,7 @@
 export(ProdPad)
 export(feedback)
 export(feedback_sources)
+export(feedback_url)
 export(get_companies)
 export(get_contacts)
 export(get_feedback)
