@@ -34,3 +34,8 @@ feedback <- function(client, contact, feedback, tags = NULL, personas = NULL, pr
 
   client$POST("/feedbacks", body = post_body)
 }
+
+#' @export
+feedback_url <- function(id) {
+  glue::glue("https://app.prodpad.com/feedback/{id}/canvas")
+}
