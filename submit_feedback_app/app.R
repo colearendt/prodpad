@@ -30,6 +30,15 @@ ui <- fluidPage(
     fluidRow(
       column(3), column(3, actionButton("submit", "Submit")),
       column(3, actionButton("interrupt", "Interrupt"))
+    ),
+    fluidRow(
+      column(
+        12,
+        tabsetPanel(
+          tabPanel("My Recent Feedbacks"),
+          tabPanel("Customer Recent Feedbacks")
+        )
+        )
     )
 )
 
