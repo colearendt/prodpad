@@ -28,7 +28,8 @@ ui <- fluidPage(
       column(6,selectizeInput("source", "Source", choices = c("None" = "",prodpad::feedback_sources), selected = ""))
     ),
     fluidRow(
-      column(3), column(3, actionButton("submit", "Submit"))
+      column(3), column(3, actionButton("submit", "Submit")),
+      column(3, actionButton("interrupt", "Interrupt"))
     )
 )
 
@@ -76,8 +77,8 @@ server <- function(input, output, session) {
   observeEvent(input$submit, {
     showNotification("Submitting feedback...", type = "message")
 
-    tryCatch({
-      feedback(
+    res <- tryCatch({
+     feedback(
         pcli,
         contact = input$contact,
         tags = input$tags,
@@ -92,9 +93,22 @@ server <- function(input, output, session) {
         glue::glue("ERROR sending feedback: {e}"),
         type = "error"
         )
+      return(NULL)
     })
 
     showNotification("Feedback sent!", type = "message")
+    if (!is.null(res)) {
+      furl <- feedback_url(res$feedbacks$id)
+      showNotification(
+        glue::glue("See the feedback here: {furl}"),
+        action = furl,
+        duration = NULL
+      )
+    }
+  })
+
+  observeEvent(input$interrupt, {
+    browser()
   })
 
   observeEvent(input$clear, {
