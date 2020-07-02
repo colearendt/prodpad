@@ -9,7 +9,7 @@ expand_response <- function(client, url, filter = .x) {
 
 #' @export
 get_feedback <- function(client) {
-  rawdat <- client$GET("/feedbacks?size=10000")
+  rawdat <- client$GET("/feedbacks?size=10000&status=all")
 
   wider <- tidyr::unnest_wider(
     tibble::tibble(dat = rawdat), dat)
