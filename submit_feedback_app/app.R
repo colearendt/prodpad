@@ -1,4 +1,5 @@
 library(shiny)
+library(shinycssloaders)
 library(prodpad)
 
 pcli <- prodpad()
@@ -9,30 +10,46 @@ ui <- fluidPage(
 
 
     fluidRow(
-        column(6, uiOutput("select_contact")),
-        column(6, uiOutput("select_product"))
+      column(12, div(actionButton("clear", "Clear")))
+    ),
+    fluidRow(
+        column(6, div(withSpinner(uiOutput("select_contact")))),
+        column(6, div(withSpinner(uiOutput("select_product"))))
     ),
     fluidRow(
       column(12,textAreaInput("description", "Feedback", resize = "both", width = "100%", placeholder = "Describe the problem being faced"))
     ),
     fluidRow(
-      column(6, uiOutput("select_personas")),
-      column(6, uiOutput("select_tags"))
+      column(6, withSpinner(uiOutput("select_personas"))),
+      column(6, withSpinner(uiOutput("select_tags")))
     ),
     fluidRow(
       column(6,selectizeInput("links", choices = list(), options = list(create=TRUE), "External Links", multiple = TRUE)),
       column(6,selectizeInput("source", "Source", choices = c("None" = "",prodpad::feedback_sources), selected = ""))
+    ),
+    fluidRow(
+      column(3), column(3, actionButton("submit", "Submit")),
+      column(3, actionButton("interrupt", "Interrupt"))
+    ),
+    fluidRow(
+      column(
+        12,
+        tabsetPanel(
+          tabPanel("My Recent Feedbacks"),
+          tabPanel("Customer Recent Feedbacks")
+        )
+        )
     )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   all_contacts <- get_contacts(pcli)
   output$select_contact <- renderUI({
-      selectizeInput(
+     selectizeInput(
           "contact",
           "Contact",
           choices = c("Select a Contact" = "", rlang::set_names(all_contacts$id, all_contacts$name)),
-          options = list(create = TRUE)
+          options = list(create = FALSE) # TODO: handle creation better
           )
   })
 
@@ -41,7 +58,7 @@ server <- function(input, output) {
       selectizeInput(
           "products",
           "Products",
-          choices = rlang::set_names(all_products$id, all_products$name),
+          choices = rlang::set_names(all_products$product_id, all_products$name),
           multiple = TRUE
           )
   })
@@ -51,7 +68,7 @@ server <- function(input, output) {
       selectizeInput(
           "personas",
           "Personas",
-          choices = rlang::set_names(all_personas$id, all_personas$name),
+          choices = rlang::set_names(all_personas$persona_id, all_personas$name),
           multiple = TRUE
           )
   })
@@ -61,9 +78,56 @@ server <- function(input, output) {
       selectizeInput(
           "tags",
           "Tags",
-          choices = rlang::set_names(all_tags$id, all_tags$tag),
+          choices = rlang::set_names(all_tags$tag_id, all_tags$tag),
           multiple = TRUE
           )
+  })
+
+  observeEvent(input$submit, {
+    showNotification("Submitting feedback...", type = "message")
+
+    res <- tryCatch({
+     feedback(
+        pcli,
+        contact = input$contact,
+        tags = input$tags,
+        personas = input$personas,
+        products = input$products,
+        source = input$source,
+        links = input$links,
+        feedback = input$description
+        )
+    }, error = function(e) {
+      showNotification(
+        glue::glue("ERROR sending feedback: {e}"),
+        type = "error"
+        )
+      return(NULL)
+    })
+
+    showNotification("Feedback sent!", type = "message")
+    if (!is.null(res)) {
+      furl <- feedback_url(res$feedbacks$id)
+      showNotification(
+        htmltools::a(href = furl, glue::glue("See the feedback here: {furl}")),
+        duration = NULL
+      )
+    }
+  })
+
+  observeEvent(input$interrupt, {
+    browser()
+  })
+
+  observeEvent(input$clear, {
+    showNotification("Clearing inputs", type = "message")
+    updateSelectizeInput(session, "contact", selected = "")
+    updateSelectizeInput(session, "tags", selected = "")
+    updateSelectizeInput(session, "personas", selected = "")
+    updateSelectizeInput(session, "products", selected = "")
+    updateSelectizeInput(session, "source", selected = "")
+    updateSelectizeInput(session, "links", selected = "")
+    updateTextAreaInput(session, "description", value = "")
   })
 }
 

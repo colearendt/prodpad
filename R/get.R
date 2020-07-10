@@ -9,7 +9,7 @@ expand_response <- function(client, url, filter = .x) {
 
 #' @export
 get_feedback <- function(client) {
-  rawdat <- client$GET("/feedbacks?size=10000")
+  rawdat <- client$GET("/feedbacks?size=10000&state=all")
 
   wider <- tidyr::unnest_wider(
     tibble::tibble(dat = rawdat), dat)
@@ -25,12 +25,19 @@ get_tags <- function(client) {
 }
 
 #' @export
+get_tags_vector <- function(client) {
+  all_tags <- get_tags(client)
+
+  as.list(rlang::set_names(all_tags[["tag_id"]], all_tags[["tag"]]))
+}
+
+#' @export
 get_companies <- function(client, .limit = 10) {
   dat_agg <- list()
   page_num <- 1
   res <- client$GET(glue::glue("/companies?page={page_num}"))
   dat_agg <- c(dat_agg, res$companies)
-  while (res$n != 0 && page_num <= .limit) {
+  while (res$size != 0 && page_num <= .limit) {
     page_num <- page_num + 1
     res <- NULL
 
@@ -42,10 +49,24 @@ get_companies <- function(client, .limit = 10) {
 }
 
 #' @export
+get_companies_vector <- function(client, .limit = 10) {
+  all_companies <- get_companies(client = client, .limit = .limit)
+
+  as.list(rlang::set_names(all_companies[["id"]], all_companies[["name"]]))
+}
+
+#' @export
 get_contacts <- function(client) {
   rawdat <- client$GET("/contacts?size=10000")
 
   tidyr::unnest_wider(tibble::tibble(dat = rawdat$contacts), dat)
+}
+
+#' @export
+get_contacts_vector <- function(client) {
+  all_contacts <- get_contacts(client)
+
+  as.list(rlang::set_names(all_contacts[["id"]], all_contacts[["name"]]))
 }
 
 #' @export
@@ -68,6 +89,13 @@ get_personas <- function(client) {
 }
 
 #' @export
+get_personas_vector <- function(client) {
+  all_personas <- get_personas(client)
+
+  as.list(rlang::set_names(all_personas[["persona_id"]], all_personas[["name"]]))
+}
+
+#' @export
 get_products <- function(client) {
   rawdat <- client$GET("/products")
 
@@ -75,6 +103,15 @@ get_products <- function(client) {
 }
 
 #' @export
-feedback_sources <- c(
+get_products_vector <- function(client) {
+  all_products <- get_products(client)
+
+  as.list(rlang::set_names(all_products[["product_id"]], all_products[["name"]]))
+}
+
+
+feedback_sources_list <- c(
   "email", "conference", "in_person_conversation", "sales_team", "social_media", "telephone_conversation", "user_test", "website_contact_form", "customer_feedback_portal", "customer_feedback_widget", "api"
 )
+#' @export
+feedback_sources <- as.list(rlang::set_names(feedback_sources_list, feedback_sources_list))

@@ -44,6 +44,41 @@ get_product(pcli)
 prodpad_api_docs()
 ```
 
+## Scripted Feedback
+
+If you want to script your feedback entry, you can do so like this:
+
+```r
+library(prodpad)
+pcli <- prodpad()
+
+all_tags <- get_tags_vector(pcli)
+all_contacts <- get_contacts_vector(pcli)
+all_personas <- get_personas_vector(pcli)
+all_products <- get_products_vector(pcli)
+
+# submit feedback
+feedback(
+  pcli, 
+  contact = all_contacts$`Anonymous Feedback`, 
+  tags = c(all_tags$`IT Adoption`), 
+  personas = all_personas$`IT Administrator`, 
+  products = c(all_products$`RStudio Connect`, all_products$`RStudio Pro`), 
+  source = feedback_sources$email,
+  feedback = "This is some feedback that I created"
+  )
+
+# go look at it in the browser
+browseURL(feedback_url(submitted$feedbacks$id))
+```
+
+## A Shiny App
+
+This app is still very much a WIP. However, if you run the following in the project directory, you will get a Shiny app that should help you submit feedback!
+```
+shiny::runApp("submit_feedback_app/app.R")
+```
+
 ## Notes
 
 - Ideas cannot be tied to products after the fact due to what feels very much
