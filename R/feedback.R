@@ -42,5 +42,5 @@ feedback_url <- function(id) {
 
 #' @export
 feedback_app <- function(...) {
-  shiny::runApp(appDir = system.file("submit_feedback_app/", package = "prodpad"))
+  shiny::runApp(appDir = system.file("submit_feedback_app/", package = "prodpad"), ...)
 }
