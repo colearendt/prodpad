@@ -109,8 +109,7 @@ server <- function(input, output, session) {
     if (!is.null(res)) {
       furl <- feedback_url(res$feedbacks$id)
       showNotification(
-        glue::glue("See the feedback here: {furl}"),
-        action = furl,
+        htmltools::a(href = furl, glue::glue("See the feedback here: {furl}")),
         duration = NULL
       )
     }
