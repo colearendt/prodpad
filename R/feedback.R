@@ -39,3 +39,8 @@ feedback <- function(client, contact, feedback, tags = NULL, personas = NULL, pr
 feedback_url <- function(id) {
   glue::glue("https://app.prodpad.com/feedback/{id}/canvas")
 }
+
+#' @export
+feedback_app <- function(...) {
+  shiny::runApp(appDir = system.file("submit_feedback_app/", package = "prodpad"))
+}
