@@ -76,7 +76,7 @@ browseURL(feedback_url(submitted$feedbacks$id))
 
 This app is still very much a WIP. However, if you run the following in the project directory, you will get a Shiny app that should help you submit feedback!
 ```
-shiny::runApp("submit_feedback_app/app.R")
+prodpad::feedback_app()
 ```
 
 ## Notes
