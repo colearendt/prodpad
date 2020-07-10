@@ -2,6 +2,7 @@
 
 export(ProdPad)
 export(feedback)
+export(feedback_app)
 export(feedback_sources)
 export(feedback_url)
 export(get_companies)
