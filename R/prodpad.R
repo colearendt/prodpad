@@ -82,3 +82,7 @@ check_debug <- function(req, res) {
   }
 }
 
+#' @export
+pp_me <- function(client) {
+  client$GET("/me")
+}
