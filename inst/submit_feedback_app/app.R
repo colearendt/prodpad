@@ -40,7 +40,10 @@ ui <- fluidPage(
             "My Recent Feedbacks",
             reactable::reactableOutput("feedback_my_recent")
             ),
-          tabPanel("Customer Recent Feedbacks")
+          tabPanel(
+            "All Recent Feedbacks",
+            reactable::reactableOutput("feedback_global_recent")
+            )
         )
         )
     )
@@ -139,6 +142,15 @@ server <- function(input, output, session) {
       filter(added_by_id == pp_me(pcli)$user$id) %>%
       select(created_at, feedback) %>%
       arrange(desc(created_at)) %>%
+      head(20) %>%
+      reactable::reactable()
+  })
+
+  output$feedback_global_recent <- reactable::renderReactable({
+    req(ncol(feedbacks()) > 0)
+    feedbacks() %>%
+      arrange(desc(created_at)) %>%
+      select(created_at, added_by_username, feedback) %>%
       head(20) %>%
       reactable::reactable()
   })
