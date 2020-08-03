@@ -29,13 +29,17 @@ ui <- fluidPage(
     ),
     fluidRow(
       column(3), column(3, actionButton("submit", "Submit")),
-      column(3, actionButton("interrupt", "Interrupt"))
+      column(3, actionButton("interrupt", "Interrupt")),
+      column(3, actionButton("refresh_feedbacks", "Update Feedbacks"))
     ),
     fluidRow(
       column(
         12,
         tabsetPanel(
-          tabPanel("My Recent Feedbacks"),
+          tabPanel(
+            "My Recent Feedbacks",
+            reactable::reactableOutput("feedback_my_recent")
+            ),
           tabPanel("Customer Recent Feedbacks")
         )
         )
@@ -49,7 +53,7 @@ server <- function(input, output, session) {
           "contact",
           "Contact",
           choices = c("Select a Contact" = "", rlang::set_names(all_contacts$id, all_contacts$name)),
-          options = list(create = FALSE) # TODO: handle creation better
+          options = list(create = TRUE) # TODO: handle creation better
           )
   })
 
@@ -115,8 +119,28 @@ server <- function(input, output, session) {
     }
   })
 
+  # View feedbacks
+
+  feedbacks <- reactiveVal(data.frame())
+
+  observeEvent(input$refresh_feedbacks, {
+    showNotification("Feedbacks: fetching... please wait")
+    feedbacks(get_feedback(pcli))
+    showNotification("Feedbacks: Done!")
+  })
+
   observeEvent(input$interrupt, {
     browser()
+  })
+
+  output$feedback_my_recent <- reactable::renderReactable({
+    req(ncol(feedbacks()) > 0)
+    feedbacks() %>%
+      filter(added_by_id == pp_me(pcli)$user$id) %>%
+      select(created_at, feedback) %>%
+      arrange(desc(created_at)) %>%
+      head(20) %>%
+      reactable::reactable()
   })
 
   observeEvent(input$clear, {
