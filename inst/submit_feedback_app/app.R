@@ -91,12 +91,28 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$submit, {
+    provided_contact <- input$contact
+    if (is.null(names(input$contact))) {
+      showNotification(glue::glue("Creating contact: {input$contact}"))
+      res <- tryCatch({
+        pp_create_contact(pcli, input$contact)
+      }, error = function(e) {
+        showNotification(
+          glue::glue("ERROR creating contact: {e}"),
+          type = "error"
+        )
+        print(e)
+        return(NULL)
+      })
+      provided_contact <- res$id
+      showNotification("Done creating contact")
+    }
     showNotification("Submitting feedback...", type = "message")
 
     res <- tryCatch({
      feedback(
         pcli,
-        contact = input$contact,
+        contact = provided_contact,
         tags = input$tags,
         personas = input$personas,
         products = input$products,
