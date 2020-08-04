@@ -92,7 +92,7 @@ get_personas <- function(client) {
 get_personas_vector <- function(client) {
   all_personas <- get_personas(client)
 
-  as.list(rlang::set_names(all_personas[["persona_id"]], all_personas[["name"]]))
+  as.list(rlang::set_names(all_personas[["id"]], all_personas[["name"]]))
 }
 
 #' @export
