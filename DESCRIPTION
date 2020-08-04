@@ -17,4 +17,6 @@ Imports:
     httr,
     glue,
     tidyr,
-    rlang
+    rlang,
+    dplyr,
+    shinycssloaders
