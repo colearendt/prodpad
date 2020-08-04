@@ -50,49 +50,50 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  all_contacts <- get_contacts(pcli)
+  all_contacts <- get_contacts_vector(pcli)
   output$select_contact <- renderUI({
      selectizeInput(
           "contact",
           "Contact",
-          choices = c("Select a Contact" = "", rlang::set_names(all_contacts$id, all_contacts$name)),
+          choices = c("Select a Contact" = "", all_contacts),
           options = list(create = TRUE) # TODO: handle creation better
           )
   })
 
-  all_products <- get_products(pcli)
+  all_products <- get_products_vector(pcli)
   output$select_product <- renderUI({
       selectizeInput(
           "products",
           "Products",
-          choices = rlang::set_names(all_products$product_id, all_products$name),
+          choices = all_products,
           multiple = TRUE
           )
   })
 
-  all_personas <- get_personas(pcli)
+  all_personas <- get_personas_vector(pcli)
   output$select_personas <- renderUI({
       selectizeInput(
           "personas",
           "Personas",
-          choices = rlang::set_names(all_personas$persona_id, all_personas$name),
+          choices = all_personas,
           multiple = TRUE
           )
   })
 
-  all_tags <- get_tags(pcli)
+  all_tags <- get_tags_vector(pcli)
   output$select_tags <- renderUI({
       selectizeInput(
           "tags",
           "Tags",
-          choices = rlang::set_names(all_tags$tag_id, all_tags$tag),
+          choices = all_tags,
           multiple = TRUE
           )
   })
 
   observeEvent(input$submit, {
+    browser()
     provided_contact <- input$contact
-    if (is.null(names(input$contact))) {
+    if (!input$contact %in% all_contacts) {
       showNotification(glue::glue("Creating contact: {input$contact}"))
       res <- tryCatch({
         pp_create_contact(pcli, input$contact)
@@ -105,7 +106,11 @@ server <- function(input, output, session) {
         return(NULL)
       })
       provided_contact <- res$id
-      showNotification("Done creating contact")
+      c_url <- pp_contact_url(provided_contact)
+      showNotification(
+        htmltools::a(href = furl, glue::glue("See contact here: {c_url}")),
+        duration = NULL
+      )
     }
     showNotification("Submitting feedback...", type = "message")
 
@@ -171,6 +176,7 @@ server <- function(input, output, session) {
       reactable::reactable()
   })
 
+  # Presets
   observeEvent(input$clear, {
     showNotification("Clearing inputs", type = "message")
     updateSelectizeInput(session, "contact", selected = "")
