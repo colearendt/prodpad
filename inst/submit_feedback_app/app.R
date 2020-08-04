@@ -1,5 +1,6 @@
 library(shiny)
 library(shinycssloaders)
+library(dplyr)
 library(prodpad)
 
 pcli <- prodpad()
@@ -91,7 +92,6 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$submit, {
-    browser()
     provided_contact <- input$contact
     if (!input$contact %in% all_contacts) {
       showNotification(glue::glue("Creating contact: {input$contact}"))
