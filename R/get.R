@@ -8,9 +8,10 @@ expand_response <- function(client, url, filter = .x) {
 }
 
 #' @export
-get_feedback <- function(client, tags = NULL) {
+get_feedback <- function(client, product = NULL, tags = NULL) {
   url <- glue::glue(
     "/feedbacks?size=10000",
+    safe_query(product, prefix="product="),
     safe_query(tags, prefix="tags="),
     .sep = "&"
   )
