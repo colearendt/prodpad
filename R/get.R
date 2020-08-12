@@ -8,8 +8,13 @@ expand_response <- function(client, url, filter = .x) {
 }
 
 #' @export
-get_feedback <- function(client) {
-  rawdat <- client$GET("/feedbacks?size=10000")
+get_feedback <- function(client, tags = NULL) {
+  url <- glue::glue(
+    "/feedbacks?size=10000",
+    safe_query(tags, prefix="tags="),
+    .sep = "&"
+  )
+  rawdat <- client$GET(url)
 
   wider <- tidyr::unnest_wider(
     tibble::tibble(dat = rawdat), dat)
