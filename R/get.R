@@ -67,6 +67,12 @@ get_ideas <- function(client, product = NULL) {
 }
 
 #' @export
+get_idea <- function(client, id) {
+  url <- glue::glue("/ideas/", as.character(id))
+  rawdat <- client$GET(url)
+}
+
+#' @export
 get_personas <- function(client) {
   rawdat <- client$GET("/personas")
 
