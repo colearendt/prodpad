@@ -7,6 +7,14 @@ expand_response <- function(client, url, filter = .x) {
   tidyr::unnest_wider(tibble::tibble(dat = rlang::eval_tidy(expr = filter_expr, data = list(.x = rawdat))), dat)
 }
 
+#' Get Feedback
+#'
+#' @param client A ProdPad API Client object
+#' @param product The Product `id` or `product_id`. Length 1 required
+#' @param tags The Tag `id` or `tag_id`. Length 1 required
+#'
+#' @return A tibble of feedbacks
+#'
 #' @export
 get_feedback <- function(client, product = NULL, tags = NULL) {
   rawdat <- client$GET("/feedbacks?size=10000&state=all")
