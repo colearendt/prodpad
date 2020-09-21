@@ -7,9 +7,25 @@ expand_response <- function(client, url, filter = .x) {
   tidyr::unnest_wider(tibble::tibble(dat = rlang::eval_tidy(expr = filter_expr, data = list(.x = rawdat))), dat)
 }
 
+#' Get Feedback
+#'
+#' @param client A ProdPad API Client object
+#' @param product The Product `id` or `product_id`. Length 1 required
+#' @param tags The Tag `id` or `tag_id`. Length 1 required
+#'
+#' @return A tibble of feedbacks
+#'
 #' @export
-get_feedback <- function(client) {
+get_feedback <- function(client, product = NULL, tags = NULL) {
   rawdat <- client$GET("/feedbacks?size=10000&state=all")
+  url <- glue::glue(
+    "/feedbacks?size=10000",
+    "state=all",
+    safe_query(product, prefix="product="),
+    safe_query(tags, prefix="tags="),
+    .sep = "&"
+  )
+  rawdat <- client$GET(url)
 
   wider <- tidyr::unnest_wider(
     tibble::tibble(dat = rawdat), dat)
@@ -79,6 +95,14 @@ get_ideas <- function(client, product = NULL) {
   rawdat <- client$GET(url)
 
   tidyr::unnest_wider(tibble::tibble(dat = rawdat$ideas), dat)
+}
+
+#' @export
+get_idea <- function(client, id) {
+  url <- glue::glue("/ideas/", as.character(id))
+  rawdat <- client$GET(url)
+
+  return(rawdat)
 }
 
 #' @export
