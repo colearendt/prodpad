@@ -21,6 +21,18 @@ ProdPad <- R6::R6Class(
       httr::content(res, as = parser)
     },
 
+    POST = function(path, body, encode = "json", parser = 'parsed') {
+      req <- paste0(self$url, path)
+      res <- httr::POST(req,
+                        self$add_auth(),
+                        body = body,
+                        encode = encode
+      )
+      self$raise_error(res)
+      check_debug(req, res)
+      httr::content(res, as = parser)
+    },
+
     search = function(query, type = c("ideas", "products", "personas", "feedbacks")) {
       query_encoded <- utils::URLencode(paste(query, collapse = "&"))
       self$GET(glue::glue("/search?q={query}"))
@@ -70,3 +82,7 @@ check_debug <- function(req, res) {
   }
 }
 
+#' @export
+pp_me <- function(client) {
+  client$GET("/me")
+}
