@@ -44,7 +44,7 @@ ProdPad <- R6::R6Class(
 
 #' @export
 prodpad_api_docs <- function() {
-  utils::browseURL("https://help.prodpad.com/hc/en-us/sections/200724758-API-Documentation")
+  utils::browseURL("https://app.swaggerhub.com/apis-docs/ProdPad/prodpad/1.0#/")
 }
 
 #' @export
